@@ -177,6 +177,7 @@ class Discriminator(nn.Module):
         self.last_fm_nums=hidden_dims[-1]
         self.last_fm_size=int( opt.img_size/(2**len(hidden_dims)) )
         # Build Encoder
+        in_channels=opt.channels
         for h_dim in hidden_dims:
             modules.append(
                 nn.Sequential(
@@ -191,7 +192,7 @@ class Discriminator(nn.Module):
 
         self.model = nn.Sequential(*modules)
 
-        self.adv_layer = nn.Sequential( nn.Linear(hidden_dims[-1]*self.last_fm_size*self.last_fm_size, self.latent_dim),nn.Sigmoid())
+        self.adv_layer = nn.Sequential( nn.Linear(hidden_dims[-1]*self.last_fm_size*self.last_fm_size, 1),nn.Sigmoid())
 
     def forward(self, img):
         out = self.model(img)
