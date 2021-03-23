@@ -63,6 +63,7 @@ class Generator(nn.Module):
         self.last_fm_nums=hidden_dims[-1]
         self.last_fm_size=int( opt.img_size/(2**len(hidden_dims)) )
         # Build Encoder
+        in_channels=opt.channels
         for h_dim in hidden_dims:
             modules.append(
                 nn.Sequential(
@@ -126,7 +127,7 @@ class Generator(nn.Module):
                             nn.BatchNorm2d(hidden_dims[-1]),
                             nn.LeakyReLU(),
                             )
-        self.final_layer_2=nn.Sequential(nn.Conv2d(hidden_dims[-1], out_channels= self.in_channels,
+        self.final_layer_2=nn.Sequential(nn.Conv2d(hidden_dims[-1], out_channels= opt.channels,
                                       kernel_size= 3, padding= 1),
                             nn.Tanh())
 
