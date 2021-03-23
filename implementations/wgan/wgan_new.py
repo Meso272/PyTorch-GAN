@@ -260,7 +260,7 @@ for epoch in range(opt.n_epochs):
             optimizer_G.zero_grad()
 
             # Generate a batch of images
-            gen_imgs = generator(z)
+            gen_imgs = generator(real_imgs)
             # Adversarial loss
             loss_G = -torch.mean(discriminator(gen_imgs))+opt.lm*F.mse_loss(real_imgs,gen_imgs)
 
