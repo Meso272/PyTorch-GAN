@@ -29,7 +29,7 @@ parser.add_argument("--latent_dim", type=int, default=4, help="dimensionality of
 parser.add_argument("--img_size", type=int, default=16, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=1, help="number of image channels")
 parser.add_argument("--sample_interval", type=int, default=400, help="interval between image sampling")
-parser.add_argument("--lambda", type=float, default=10, help="lambda")
+parser.add_argument("--lmd", type=float, default=10, help="lambda")
 parser.add_argument('--hidden_dims', nargs='*', type=int)
 parser.add_argument("--save", type=str,  help="saving path")
 opt = parser.parse_args()
@@ -56,10 +56,10 @@ class Generator(nn.Module):
         
         
         modules = []
-        if opts.hidden_dims is None:
+        if opt.hidden_dims is None:
             hidden_dims = [32, 64, 128, 256, 512]
         else:
-            hidden_dims=opts.hidden_dims
+            hidden_dims=opt.hidden_dims
         self.last_fm_nums=hidden_dims[-1]
         self.last_fm_size=int( input_size/(2**len(hidden_dims)) )
         # Build Encoder
@@ -168,10 +168,10 @@ class Discriminator(nn.Module):
         
         
         modules = []
-        if opts.hidden_dims is None:
+        if opt.hidden_dims is None:
             hidden_dims = [32, 64, 128, 256, 512]
         else:
-            hidden_dims=opts.hidden_dims
+            hidden_dims=opt.hidden_dims
         self.last_fm_nums=hidden_dims[-1]
         self.last_fm_size=int( input_size/(2**len(hidden_dims)) )
         # Build Encoder
@@ -256,7 +256,7 @@ for epoch in range(opt.n_epochs):
         gen_imgs = generator(real_imgs)
 
         # Loss measures generator's ability to fool the discriminator
-        g_loss = adversarial_loss(discriminator(gen_imgs), valid)+opt.lambda*F.mse_loss(real_imgs,gen_imgs)
+        g_loss = adversarial_loss(discriminator(gen_imgs), valid) + opt.lmd * F.mse_loss(real_imgs,gen_imgs)
 
         g_loss.backward()
         optimizer_G.step()
