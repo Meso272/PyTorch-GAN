@@ -13,7 +13,9 @@ from torch.autograd import Variable
 import torch.nn as nn
 import torch.nn.functional as F
 import torch
-from ../cesm import CLDHGH
+import sys
+sys.path.append("..")
+from cesm import CLDHGH
 os.makedirs("images", exist_ok=True)
 
 parser = argparse.ArgumentParser()
