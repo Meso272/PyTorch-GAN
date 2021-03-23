@@ -29,7 +29,7 @@ parser.add_argument("--latent_dim", type=int, default=4, help="dimensionality of
 parser.add_argument("--img_size", type=int, default=16, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=1, help="number of image channels")
 parser.add_argument("--sample_interval", type=int, default=400, help="interval between image sampling")
-parser.add_argument("--lmd", type=float, default=10, help="lambda")
+parser.add_argument("--lm", type=float, default=10, help="lambda")
 parser.add_argument('--hidden_dims', nargs='*', type=int)
 parser.add_argument("--save", type=str,  help="saving path")
 opt = parser.parse_args()
@@ -221,7 +221,7 @@ discriminator.apply(weights_init_normal)
 # Configure data loader
 datapath="/home/jliu447/lossycompression/multisnapshot-data-cleaned/CLDHGH"
 dataloader = torch.utils.data.DataLoader(
-    dataset=CLDHGH(path=datapath,start=0,end=5,size=opt.img_size,gan_scale=True),
+    dataset=CLDHGH(path=datapath,start=0,end=50,size=opt.img_size,gan_scale=True),
     batch_size=opt.batch_size,
     shuffle=True,
 )
@@ -259,7 +259,7 @@ for epoch in range(opt.n_epochs):
         gen_imgs = generator(real_imgs)
 
         # Loss measures generator's ability to fool the discriminator
-        g_loss = adversarial_loss(discriminator(gen_imgs), valid) + opt.lmd * F.mse_loss(real_imgs,gen_imgs)
+        g_loss = adversarial_loss(discriminator(gen_imgs), valid) + opt.lm * F.mse_loss(real_imgs,gen_imgs)
 
         g_loss.backward()
         optimizer_G.step()
@@ -290,3 +290,4 @@ for epoch in range(opt.n_epochs):
         '''
 
 torch.save(generator, opt.save)
+torch.save(generator.state_dict(),opt.save+'.params.pt')

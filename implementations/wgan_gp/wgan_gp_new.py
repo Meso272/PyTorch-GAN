@@ -15,11 +15,13 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.autograd as autograd
 import torch
-from ../cesm import CLDHGH
+import sys
+sys.path.append("..")
+from cesm import CLDHGH
 os.makedirs("images", exist_ok=True)
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--n_epochs", type=int, default=200, help="number of epochs of training")
+parser.add_argument("--n_epochs", type=int, default=400, help="number of epochs of training")
 parser.add_argument("--batch_size", type=int, default=64, help="size of the batches")
 parser.add_argument("--lr", type=float, default=0.0002, help="adam: learning rate")
 parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
@@ -32,7 +34,7 @@ parser.add_argument("--n_critic", type=int, default=5, help="number of training 
 parser.add_argument("--clip_value", type=float, default=0.01, help="lower and upper clip value for disc. weights")
 parser.add_argument("--sample_interval", type=int, default=400, help="interval betwen image samples")
 parser.add_argument('--hidden_dims', nargs='*', type=int)
-parser.add_argument("--lambda", type=float, default=10, help="lambda")
+parser.add_argument("--lm", type=float, default=10, help="lambda")
 parser.add_argument("--save", type=str,  help="saving path")
 opt = parser.parse_args()
 print(opt)
@@ -51,13 +53,15 @@ class Generator(nn.Module):
         
         
         modules = []
-        if opts.hidden_dims is None:
-            hidden_dims = [32, 64, 128, 256, 512]
+        if opt.hidden_dims is None:
+            hidden_dims = [32, 64, 128, 256]
         else:
-            hidden_dims=opts.hidden_dims
+            hidden_dims=opt.hidden_dims
+        #print(hidden_dims)
         self.last_fm_nums=hidden_dims[-1]
-        self.last_fm_size=int( input_size/(2**len(hidden_dims)) )
+        self.last_fm_size=int( opt.img_size/(2**len(hidden_dims)) )
         # Build Encoder
+        in_channels=opt.channels
         for h_dim in hidden_dims:
             modules.append(
                 nn.Sequential(
@@ -121,11 +125,11 @@ class Generator(nn.Module):
                             nn.BatchNorm2d(hidden_dims[-1]),
                             nn.LeakyReLU(),
                             )
-        self.final_layer_2=nn.Sequential(nn.Conv2d(hidden_dims[-1], out_channels= self.in_channels,
+        self.final_layer_2=nn.Sequential(nn.Conv2d(hidden_dims[-1], out_channels= opt.channels,
                                       kernel_size= 3, padding= 1),
                             nn.Tanh())
 
-    def encode(self, input: Tensor) -> Tensor:
+    def encode(self, input) :
         """
         Encodes the input by passing through the encoder network
         and returns the latent codes.
@@ -140,7 +144,7 @@ class Generator(nn.Module):
         z = self.fc_z(result)
         return z
 
-    def decode(self, z: Tensor) -> Tensor:
+    def decode(self, z) :
         result = self.decoder_input(z)
         result = result.view(-1, self.last_fm_nums, self.last_fm_size, self.last_fm_size)
         result = self.decoder(result)
@@ -149,7 +153,7 @@ class Generator(nn.Module):
         
         return result
 
-    def forward(self, input: Tensor, **kwargs) -> List[Tensor]:
+    def forward(self, input, **kwargs) :
         z = self.encode(input)
         return  self.decode(z)
 
@@ -163,13 +167,14 @@ class Discriminator(nn.Module):
         
         
         modules = []
-        if opts.hidden_dims is None:
-            hidden_dims = [32, 64, 128, 256, 512]
+        if opt.hidden_dims is None:
+            hidden_dims = [32, 64, 128, 256]
         else:
-            hidden_dims=opts.hidden_dims
+            hidden_dims=opt.hidden_dims
         self.last_fm_nums=hidden_dims[-1]
-        self.last_fm_size=int( input_size/(2**len(hidden_dims)) )
+        self.last_fm_size=int( opt.img_size/(2**len(hidden_dims)) )
         # Build Encoder
+        in_channels=opt.channels
         for h_dim in hidden_dims:
             modules.append(
                 nn.Sequential(
@@ -184,7 +189,7 @@ class Discriminator(nn.Module):
 
         self.model = nn.Sequential(*modules)
 
-        self.adv_layer = nn.Sequential( nn.Linear(hidden_dims[-1]*self.last_fm_size*self.last_fm_size, self.latent_dim),nn.Sigmoid())
+        self.adv_layer = nn.Sequential( nn.Linear(hidden_dims[-1]*self.last_fm_size*self.last_fm_size, 1),nn.Sigmoid())
 
     def forward(self, img):
         out = self.model(img)
@@ -291,7 +296,7 @@ for epoch in range(opt.n_epochs):
             # Loss measures generator's ability to fool the discriminator
             # Train on fake images
             fake_validity = discriminator(fake_imgs)
-            g_loss = -torch.mean(fake_validity)+opt.lambda*F.mse_loss(real_imgs,fake_imgs)
+            g_loss = -torch.mean(fake_validity)+opt.lm*F.mse_loss(real_imgs,fake_imgs)
 
             g_loss.backward()
             optimizer_G.step()
@@ -308,3 +313,4 @@ for epoch in range(opt.n_epochs):
 
 
 torch.save(generator, opt.save)
+torch.save(generator.state_dict(),opt.save+'.params.pt')
