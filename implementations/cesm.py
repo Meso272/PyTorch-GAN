@@ -25,7 +25,7 @@ class CLDHGH(Dataset):
                     pict=np.expand_dims(pict,0)
                     #print(array[x:x+size,y:y+size])
                     if gan_scale:
-                        picts=(picts-0.5)**2
+                        pict=(pict-0.5)**2
                     picts.append(pict)
         self.picts=np.array(picts)
     def __len__(self):
