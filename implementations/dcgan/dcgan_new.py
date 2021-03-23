@@ -256,7 +256,7 @@ for epoch in range(opt.n_epochs):
         gen_imgs = generator(real_imgs)
 
         # Loss measures generator's ability to fool the discriminator
-        g_loss = adversarial_loss(discriminator(gen_imgs), valid)+opts.lambda*F.mse_loss(real_imgs,gen_imgs)
+        g_loss = adversarial_loss(discriminator(gen_imgs), valid)+opt.lambda*F.mse_loss(real_imgs,gen_imgs)
 
         g_loss.backward()
         optimizer_G.step()
