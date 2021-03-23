@@ -171,7 +171,7 @@ class Discriminator(nn.Module):
         
         modules = []
         if opt.hidden_dims is None:
-            hidden_dims = [32, 64, 128, 256, 512]
+            hidden_dims = [32, 64, 128, 256]
         else:
             hidden_dims=opt.hidden_dims
         self.last_fm_nums=hidden_dims[-1]
