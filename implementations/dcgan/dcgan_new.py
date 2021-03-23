@@ -130,7 +130,7 @@ class Generator(nn.Module):
                                       kernel_size= 3, padding= 1),
                             nn.Tanh())
 
-    def encode(self, input: Tensor) -> Tensor:
+    def encode(self, input) :
         """
         Encodes the input by passing through the encoder network
         and returns the latent codes.
@@ -145,7 +145,7 @@ class Generator(nn.Module):
         z = self.fc_z(result)
         return z
 
-    def decode(self, z: Tensor) -> Tensor:
+    def decode(self, z) :
         result = self.decoder_input(z)
         result = result.view(-1, self.last_fm_nums, self.last_fm_size, self.last_fm_size)
         result = self.decoder(result)
@@ -154,7 +154,7 @@ class Generator(nn.Module):
         
         return result
 
-    def forward(self, input: Tensor, **kwargs) -> List[Tensor]:
+    def forward(self, input, **kwargs) :
         z = self.encode(input)
         return  self.decode(z)
 
