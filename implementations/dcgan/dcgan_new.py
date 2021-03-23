@@ -221,7 +221,7 @@ discriminator.apply(weights_init_normal)
 # Configure data loader
 datapath="/home/jliu447/lossycompression/multisnapshot-data-cleaned/CLDHGH"
 dataloader = torch.utils.data.DataLoader(
-    dataset=CLDHGH(path=datapath,start=0,end=50,size=opt.img_size,gan_scale=True),
+    dataset=CLDHGH(path=datapath,start=0,end=5,size=opt.img_size,gan_scale=True),
     batch_size=opt.batch_size,
     shuffle=True,
 )
