@@ -175,7 +175,7 @@ class Discriminator(nn.Module):
         else:
             hidden_dims=opt.hidden_dims
         self.last_fm_nums=hidden_dims[-1]
-        self.last_fm_size=int( input_size/(2**len(hidden_dims)) )
+        self.last_fm_size=int( opt.img_size/(2**len(hidden_dims)) )
         # Build Encoder
         for h_dim in hidden_dims:
             modules.append(
