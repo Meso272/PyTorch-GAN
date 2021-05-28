@@ -36,6 +36,7 @@ parser.add_argument("--img_width", type=int, default=256, help="size of image wi
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
 parser.add_argument("--sample_interval", type=int, default=100, help="interval between saving generator outputs")
 parser.add_argument("--checkpoint_interval", type=int, default=-1, help="interval between saving model checkpoints")
+
 parser.add_argument("--n_residual_blocks", type=int, default=9, help="number of residual blocks in generator")
 parser.add_argument("--lambda_cyc", type=float, default=10.0, help="cycle loss weight")
 parser.add_argument("--lambda_id", type=float, default=5.0, help="identity loss weight")
@@ -276,7 +277,7 @@ for epoch in range(opt.epoch, opt.n_epochs):
     lr_scheduler_D_A.step()
     lr_scheduler_D_B.step()
 
-    if opt.checkpoint_interval != -1 and epoch % opt.checkpoint_interval == 0:
+    if opt.checkpoint_interval != -1 and (epoch % opt.checkpoint_interval == 0 or epoch==opt.n_epochs-1):
         # Save model checkpoints
         torch.save(G_AB.state_dict(), "saved_models/%s/G_AB_%d.pth" % (opt.dataset_name, epoch))
         torch.save(G_BA.state_dict(), "saved_models/%s/G_BA_%d.pth" % (opt.dataset_name, epoch))
