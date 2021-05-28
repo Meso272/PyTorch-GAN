@@ -63,26 +63,26 @@ D_A = Discriminator(input_shape)
 D_B = Discriminator(input_shape)
 #print(cuda)
 if cuda:
-    
-    G_AB = G_AB.cuda()
+    _AB = torch.nn.DataParallel(G_AB)G
+    G_AB = G_AB.cuda().module
 
-    
-    G_BA = G_BA.cuda()
+    G_BA = torch.nn.DataParallel(G_BA)
+    G_BA = G_BA.cuda().module
 
-    
-    D_A = D_A.cuda()
+    D_A = torch.nn.DataParallel(D_A)
+    D_A = D_A.cuda().module
 
-    
-    D_B = D_B.cuda()
+    D_B = torch.nn.DataParallel(D_B)
+    D_B = D_B.cuda().module
 
-    
-    criterion_GAN.cuda()
+    criterion_GAN = torch.nn.DataParallel(criterion_GAN)
+    criterion_GAN.cuda().module
 
-    
-    criterion_cycle.cuda()
+    criterion_cycle = torch.nn.DataParallel(criterion_cycle)
+    criterion_cycle.cuda().module
 
-    
-    criterion_identity.cuda()
+    criterion_identity = torch.nn.DataParallel(criterion_identity)
+    criterion_identity.cuda().module
 
 if opt.epoch != 0:
     # Load pretrained models
@@ -215,7 +215,7 @@ for epoch in range(opt.epoch, opt.n_epochs):
         # Total loss
         loss_G = loss_GAN + opt.lambda_cyc * loss_cycle + opt.lambda_id * loss_identity
 
-        loss_G.backward()
+        loss_G.backward(torch.ones_like(loss_G))
         optimizer_G.step()
 
         # -----------------------
@@ -232,7 +232,7 @@ for epoch in range(opt.epoch, opt.n_epochs):
         # Total loss
         loss_D_A = (loss_real + loss_fake) / 2
 
-        loss_D_A.backward()
+        loss_D_A.backward(torch.ones_like(loss_D_A))
         optimizer_D_A.step()
 
         # -----------------------
@@ -249,7 +249,7 @@ for epoch in range(opt.epoch, opt.n_epochs):
         # Total loss
         loss_D_B = (loss_real + loss_fake) / 2
 
-        loss_D_B.backward()
+        loss_D_B.backward(torch.ones_like(loss_D_B))
         optimizer_D_B.step()
 
         loss_D = (loss_D_A + loss_D_B) / 2
