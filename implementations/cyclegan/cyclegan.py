@@ -61,7 +61,7 @@ G_AB = GeneratorResNet(input_shape, opt.n_residual_blocks)
 G_BA = GeneratorResNet(input_shape, opt.n_residual_blocks)
 D_A = Discriminator(input_shape)
 D_B = Discriminator(input_shape)
-
+print(cuda)
 if cuda:
     G_AB = G_AB.cuda()
     G_BA = G_BA.cuda()
