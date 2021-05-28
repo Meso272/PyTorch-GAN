@@ -35,7 +35,7 @@ parser.add_argument("--img_height", type=int, default=320, help="size of image h
 parser.add_argument("--img_width", type=int, default=256, help="size of image width")
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
 parser.add_argument("--sample_interval", type=int, default=100, help="interval between saving generator outputs")
-parser.add_argument("--checkpoint_interval", type=int, default=-1, help="interval between saving model checkpoints")
+parser.add_argument("--checkpoint_interval", type=int, default=50, help="interval between saving model checkpoints")
 
 parser.add_argument("--n_residual_blocks", type=int, default=9, help="number of residual blocks in generator")
 parser.add_argument("--lambda_cyc", type=float, default=10.0, help="cycle loss weight")
@@ -63,12 +63,25 @@ D_A = Discriminator(input_shape)
 D_B = Discriminator(input_shape)
 #print(cuda)
 if cuda:
+    G_AB = torch.nn.DataParallel(G_AB)
     G_AB = G_AB.cuda()
+
+    G_BA = torch.nn.DataParallel(G_BA)
     G_BA = G_BA.cuda()
+
+    D_A = torch.nn.DataParallel(D_A)
     D_A = D_A.cuda()
+
+    D_B = torch.nn.DataParallel(D_B)
     D_B = D_B.cuda()
+
+    criterion_GAN = torch.nn.DataParallel(criterion_GAN)
     criterion_GAN.cuda()
+
+    criterion_cycle = torch.nn.DataParallel(criterion_cycle)
     criterion_cycle.cuda()
+
+    criterion_identity = torch.nn.DataParallel(criterion_identity)
     criterion_identity.cuda()
 
 if opt.epoch != 0:
