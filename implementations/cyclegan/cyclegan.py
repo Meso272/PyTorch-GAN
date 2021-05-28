@@ -272,11 +272,11 @@ for epoch in range(opt.epoch, opt.n_epochs):
                 opt.n_epochs,
                 i,
                 len(dataloader),
-                loss_D.item(),
-                loss_G.item(),
-                loss_GAN.item(),
-                loss_cycle.item(),
-                loss_identity.item(),
+                loss_D.sum().item(),
+                loss_G.sum().item(),
+                loss_GAN.sum().item(),
+                loss_cycle.sum().item(),
+                loss_identity.sum().item(),
                 time_left,
             )
         )
