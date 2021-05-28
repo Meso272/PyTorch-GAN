@@ -63,7 +63,7 @@ D_A = Discriminator(input_shape)
 D_B = Discriminator(input_shape)
 #print(cuda)
 if cuda:
-    _AB = torch.nn.DataParallel(G_AB)G
+    G_AB = torch.nn.DataParallel(G_AB)
     G_AB = G_AB.cuda().module
 
     G_BA = torch.nn.DataParallel(G_BA)
