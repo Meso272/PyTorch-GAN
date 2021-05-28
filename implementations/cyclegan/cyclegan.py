@@ -64,25 +64,25 @@ D_B = Discriminator(input_shape)
 #print(cuda)
 if cuda:
     G_AB = torch.nn.DataParallel(G_AB)
-    G_AB = G_AB.cuda()
+    G_AB = G_AB.cuda().module
 
     G_BA = torch.nn.DataParallel(G_BA)
-    G_BA = G_BA.cuda()
+    G_BA = G_BA.cuda().module
 
     D_A = torch.nn.DataParallel(D_A)
-    D_A = D_A.cuda()
+    D_A = D_A.cuda().module
 
     D_B = torch.nn.DataParallel(D_B)
-    D_B = D_B.cuda()
+    D_B = D_B.cuda().module
 
     criterion_GAN = torch.nn.DataParallel(criterion_GAN)
-    criterion_GAN.cuda()
+    criterion_GAN.cuda().module
 
     criterion_cycle = torch.nn.DataParallel(criterion_cycle)
-    criterion_cycle.cuda()
+    criterion_cycle.cuda().module
 
     criterion_identity = torch.nn.DataParallel(criterion_identity)
-    criterion_identity.cuda()
+    criterion_identity.cuda().module
 
 if opt.epoch != 0:
     # Load pretrained models
