@@ -63,27 +63,26 @@ D_A = Discriminator(input_shape)
 D_B = Discriminator(input_shape)
 #print(cuda)
 if cuda:
-    G_AB = torch.nn.DataParallel(G_AB)
-    G_AB = G_AB.cuda().module
+    
+    G_AB = G_AB.cuda()
 
-    G_BA = torch.nn.DataParallel(G_BA)
-    G_BA = G_BA.cuda().module
+    
+    G_BA = G_BA.cuda()
 
-    D_A = torch.nn.DataParallel(D_A)
-    D_A = D_A.cuda().module
+    
+    D_A = D_A.cuda()
 
-    D_B = torch.nn.DataParallel(D_B)
-    D_B = D_B.cuda().module
+   
+    D_B = D_B.cuda()
 
-    criterion_GAN = torch.nn.DataParallel(criterion_GAN)
-    criterion_GAN.cuda().module
+    
+    criterion_GAN.cuda()
 
-    criterion_cycle = torch.nn.DataParallel(criterion_cycle)
-    criterion_cycle.cuda().module
+    
+    criterion_cycle.cuda()
 
-    criterion_identity = torch.nn.DataParallel(criterion_identity)
-    criterion_identity.cuda().module
-
+    
+    criterion_identity.cuda()
 if opt.epoch != 0:
     # Load pretrained models
     G_AB.load_state_dict(torch.load("saved_models/%s/G_AB_%d.pth" % (opt.dataset_name, opt.epoch)))
@@ -215,7 +214,7 @@ for epoch in range(opt.epoch, opt.n_epochs):
         # Total loss
         loss_G = loss_GAN + opt.lambda_cyc * loss_cycle + opt.lambda_id * loss_identity
 
-        loss_G.backward(torch.ones_like(loss_G))
+        loss_G.backward()
         optimizer_G.step()
 
         # -----------------------
@@ -232,7 +231,7 @@ for epoch in range(opt.epoch, opt.n_epochs):
         # Total loss
         loss_D_A = (loss_real + loss_fake) / 2
 
-        loss_D_A.backward(torch.ones_like(loss_D_A))
+        loss_D_A.backward()
         optimizer_D_A.step()
 
         # -----------------------
@@ -249,7 +248,7 @@ for epoch in range(opt.epoch, opt.n_epochs):
         # Total loss
         loss_D_B = (loss_real + loss_fake) / 2
 
-        loss_D_B.backward(torch.ones_like(loss_D_B))
+        loss_D_B.backward()
         optimizer_D_B.step()
 
         loss_D = (loss_D_A + loss_D_B) / 2
@@ -272,11 +271,11 @@ for epoch in range(opt.epoch, opt.n_epochs):
                 opt.n_epochs,
                 i,
                 len(dataloader),
-                loss_D.sum().item(),
-                loss_G.sum().item(),
-                loss_GAN.sum().item(),
-                loss_cycle.sum().item(),
-                loss_identity.sum().item(),
+                loss_D.item(),
+                loss_G.item(),
+                loss_GAN.item(),
+                loss_cycle.item(),
+                loss_identity.item(),
                 time_left,
             )
         )
