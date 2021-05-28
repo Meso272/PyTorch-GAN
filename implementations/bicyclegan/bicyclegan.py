@@ -24,18 +24,18 @@ import torch
 parser = argparse.ArgumentParser()
 parser.add_argument("--epoch", type=int, default=0, help="epoch to start training from")
 parser.add_argument("--n_epochs", type=int, default=200, help="number of epochs of training")
-parser.add_argument("--dataset_name", type=str, default="edges2shoes", help="name of the dataset")
+parser.add_argument("--dataset_name", type=str, default="pgandata1", help="name of the dataset")
 parser.add_argument("--batch_size", type=int, default=8, help="size of the batches")
 parser.add_argument("--lr", type=float, default=0.0002, help="adam: learning rate")
 parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--n_cpu", type=int, default=8, help="number of cpu threads to use during batch generation")
-parser.add_argument("--img_height", type=int, default=128, help="size of image height")
-parser.add_argument("--img_width", type=int, default=128, help="size of image width")
+parser.add_argument("--img_height", type=int, default=320, help="size of image height")
+parser.add_argument("--img_width", type=int, default=256, help="size of image width")
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
 parser.add_argument("--latent_dim", type=int, default=8, help="number of latent codes")
 parser.add_argument("--sample_interval", type=int, default=400, help="interval between saving generator samples")
-parser.add_argument("--checkpoint_interval", type=int, default=-1, help="interval between model checkpoints")
+parser.add_argument("--checkpoint_interval", type=int, default=50, help="interval between model checkpoints")
 parser.add_argument("--lambda_pixel", type=float, default=10, help="pixelwise loss weight")
 parser.add_argument("--lambda_latent", type=float, default=0.5, help="latent loss weight")
 parser.add_argument("--lambda_kl", type=float, default=0.01, help="kullback-leibler loss weight")
@@ -251,7 +251,7 @@ for epoch in range(opt.epoch, opt.n_epochs):
         if batches_done % opt.sample_interval == 0:
             sample_images(batches_done)
 
-    if opt.checkpoint_interval != -1 and epoch % opt.checkpoint_interval == 0:
+    if opt.checkpoint_interval != -1 and (epoch % opt.checkpoint_interval == 0 or epoch==opt.n_epochs-1):
         # Save model checkpoints
         torch.save(generator.state_dict(), "saved_models/%s/generator_%d.pth" % (opt.dataset_name, epoch))
         torch.save(encoder.state_dict(), "saved_models/%s/encoder_%d.pth" % (opt.dataset_name, epoch))
