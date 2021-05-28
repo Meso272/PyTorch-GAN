@@ -129,7 +129,7 @@ dataloader = DataLoader(
 )
 
 val_dataloader = DataLoader(
-    ImageDataset("../../data/%s" % opt.dataset_name, transforms_=transforms_, mode="val"),
+    ImageDataset("../../data/%s" % opt.dataset_name, transforms_=transforms_, mode="test"),
     batch_size=5,
     shuffle=True,
     num_workers=1,
